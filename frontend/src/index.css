@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+@theme {
+  --color-panel-bg: var(--bg-panel);
+  --color-chat-bg: var(--bg-chat);
+  --color-main-bg: var(--bg-main);
+  --color-main-border: var(--border-color);
+  --color-main-text: var(--text-main);
+  --color-muted-text: var(--text-muted);
+  --color-card-bg: var(--bg-card);
+  --color-card-border: var(--border-card);
+  --color-input-text: var(--text-input);
+  --color-input-bg: var(--bg-input);
+  --color-hover-bg: var(--bg-hover);
+  --color-pill-bg: var(--bg-pill);
+  --color-pill-text: var(--text-pill);
+  --color-safety-pass-bg: var(--bg-safety-pass);
+  --color-safety-pass-border: var(--border-safety-pass);
+  --color-safety-pass-text: var(--text-safety-pass);
+  --color-safety-fail-bg: var(--bg-safety-fail);
+  --color-safety-fail-border: var(--border-safety-fail);
+  --color-safety-fail-text: var(--text-safety-fail);
+}
+
+:root {
+  --bg-main: #070a13;
+  --bg-chat: #080d19;
+  --bg-panel: #0c1222;
+  --border-color: #1b253b;
+  --text-main: #f3f4f6;
+  --text-muted: #98a2b3;
+  --text-inverse: #070a13;
+  --bg-card: #0d1527;
+  --border-card: #1d273f;
+  --text-input: #4e5d78;
+  --bg-input: #080d19;
+  --bg-hover: #1a233a;
+  --bg-pill: #0c1222;
+  --text-pill: #9cbfeb;
+  --bg-safety-pass: rgba(52, 211, 153, 0.1);
+  --border-safety-pass: rgba(52, 211, 153, 0.3);
+  --text-safety-pass: #34d399;
+  --bg-safety-fail: rgba(248, 113, 113, 0.1);
+  --border-safety-fail: rgba(248, 113, 113, 0.3);
+  --text-safety-fail: #f87171;
+}
+
+:root.light {
+  --bg-main: #f4f5f7;
+  --bg-chat: #ffffff;
+  --bg-panel: #fcfcfd;
+  --border-color: #e4e7ec;
+  --text-main: #1d2939;
+  --text-muted: #667085;
+  --text-inverse: #ffffff;
+  --bg-card: #f9fafb;
+  --border-card: #eaecf0;
+  --text-input: #667085;
+  --bg-input: #f2f4f7;
+  --bg-hover: #e4e7ec;
+  --bg-pill: #f2f4f7;
+  --text-pill: #175cd3;
+  --bg-safety-pass: rgba(5, 150, 105, 0.08);
+  --border-safety-pass: rgba(5, 150, 105, 0.25);
+  --text-safety-pass: #059669;
+  --bg-safety-fail: rgba(220, 38, 38, 0.08);
+  --border-safety-fail: rgba(220, 38, 38, 0.25);
+  --text-safety-fail: #dc2626;
+}
+
+@layer base {
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+}
+
+/* Custom scrollbars for the chat log and state details */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-chat);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}

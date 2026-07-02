@@ -5,14 +5,17 @@ from typing import Dict, Any, List
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from dotenv import load_dotenv
+
+# Load env variables
+load_dotenv()
 
 # Add project root to Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
-try:
-    from backend.app.agents.baseline_agent import RuleBasedSupervisor
-except ImportError:
-    from backend.app.agents.supervisor import RuleBasedSupervisor
+from langchain_core.messages import HumanMessage, AIMessage
+from backend.app.agents.graph import graph
+
 
 app = FastAPI(title="ResolveDesk AI API", version="1.0.0")
 
@@ -52,46 +55,75 @@ async def chat_endpoint(request: ChatRequest):
     if session_id not in chat_history_store:
         chat_history_store[session_id] = []
 
-    # Record user message
-    user_msg = {"role": "user", "content": request.message, "timestamp": datetime.datetime.now().isoformat()}
+    # Map previous memory history to LangChain message objects
+    lang_messages = []
+    for msg in chat_history_store[session_id]:
+        if msg["role"] == "user":
+            lang_messages.append(HumanMessage(content=msg["content"]))
+        elif msg["role"] == "assistant":
+            lang_messages.append(AIMessage(content=msg["content"]))
+
+    # Append the new user message
+    lang_messages.append(HumanMessage(content=request.message))
+
+    # Invoke the LangGraph workflow
+    try:
+        inputs = {
+            "messages": lang_messages,
+            "current_agent": "Supervisor",
+            "plan_steps": [],
+            "rag_context": "",
+            "sql_results": {},
+            "safety_check": {"passed": True, "details": "Initial Check"},
+            "session_id": session_id
+        }
+        config = {"configurable": {"thread_id": session_id}}
+        result = graph.invoke(inputs, config)  # type: ignore
+    except Exception as e:
+        print(f"[ERROR] LangGraph execution failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Agent workflow execution error: {e}")
+
+    # Extract final assistant response and trace variables
+    final_response = "I am sorry, I am unable to generate a response."
+    for msg in reversed(result["messages"]):
+        if msg.type == "ai":
+            if isinstance(msg.content, list):
+                text_parts = []
+                for part in msg.content:
+                    if isinstance(part, dict) and "text" in part:
+                        text_parts.append(part["text"])
+                    elif isinstance(part, str):
+                        text_parts.append(part)
+                final_response = "".join(text_parts)
+            else:
+                final_response = msg.content or ""
+            break
+
+    # Record user message in local chat store
+    user_msg = {
+        "role": "user", 
+        "content": request.message, 
+        "timestamp": datetime.datetime.now().isoformat()
+    }
     chat_history_store[session_id].append(user_msg)
 
-    # Initialize agent
-    agent = RuleBasedSupervisor()
+    # Record assistant message in local chat store with state trace
+    state_trace = {
+        "current_agent": result.get("current_agent", "Supervisor"),
+        "plan_steps": result.get("plan_steps", []),
+        "sql_results": result.get("sql_results", {}),
+        "safety_check": result.get("safety_check", {"passed": True, "details": "No issues detected"})
+    }
     
-    # Run agent
-    response_text = agent.handle_query(request.message)
-
-    # Mock state updates for the baseline agent to show trace panel info
-    # Later phases will return real LangGraph state variables
-    current_agent = "Supervisor (Baseline)"
-    plan_steps = []
-    sql_results = {}
-    safety_check = {"passed": True, "details": "No issues detected (Baseline)"}
-
-    # Custom mock outputs for trace demonstration
-    if "refund" in request.message.lower():
-        current_agent = "RAG Agent"
-        safety_check = {"passed": True, "details": "PII clear. Refund policy verified."}
-    elif any(kw in request.message.lower() for kw in ["subscription", "ticket", "payment", "customer", "invoice"]):
-        current_agent = "SQL Agent"
-        sql_results = {"error": "Unable to retrieve live customer records or account data."}
-
-    # Record agent message
     agent_msg = {
         "role": "assistant",
-        "content": response_text,
+        "content": final_response,
         "timestamp": datetime.datetime.now().isoformat(),
-        "state": {
-            "current_agent": current_agent,
-            "plan_steps": plan_steps,
-            "sql_results": sql_results,
-            "safety_check": safety_check
-        }
+        "state": state_trace
     }
     chat_history_store[session_id].append(agent_msg)
 
-    return ChatResponse(response=response_text, state=agent_msg["state"])
+    return ChatResponse(response=final_response, state=state_trace)
 
 @app.post("/api/feedback")
 async def feedback_endpoint(request: FeedbackRequest):

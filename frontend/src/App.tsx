@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import { supportApi } from './api/supportApi'
 import type { Message } from './api/supportApi'
+import MarkdownRenderer from './components/MarkdownRenderer'
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -273,7 +274,7 @@ function App() {
                       ? 'bg-purple-600 text-white rounded-tr-none' 
                       : 'bg-card-bg border border-card-border text-main-text rounded-tl-none'
                   }`}>
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                    <MarkdownRenderer content={msg.content} isUser={msg.role === 'user'} />
                     
                     {msg.role === 'assistant' && (
                       <div className="flex items-center justify-between mt-3 pt-2 border-t border-card-border text-[10px] text-muted-text transition-colors duration-200">

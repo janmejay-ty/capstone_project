@@ -14,7 +14,7 @@ class RouteToRAG(BaseModel):
     reason: str = Field(description="Reason for routing to the RAG specialist.")
 
 class RouteToSQL(BaseModel):
-    """Route the conversation to the SQL Agent to lookup database records, customer subscriptions, ticket status, or payment history."""
+    """Route the conversation to the SQL Agent to lookup database records, customer subscriptions, ticket status, payment history, database metrics (such as customer counts), or lists of all customers."""
     reason: str = Field(description="Reason for routing to the SQL specialist.")
 
 class RouteToPlanner(BaseModel):
@@ -26,7 +26,7 @@ Your sole job is to read the customer conversation history and select the next s
 
 You have access to three specialist agent routing tools:
 1. RouteToRAG: Call for static product guides, FAQs, company policies (refund, privacy), pricing plans, or troubleshooting instructions (e.g., password reset, password changes). You MUST use this tool for any informational questions about the product.
-2. RouteToSQL: Call to look up customer-specific live database records, subscriptions, invoice statuses, or ticket details.
+2. RouteToSQL: Call to look up customer-specific live database records, subscriptions, invoice statuses, ticket details, database statistics/metrics (such as customer counts), or listings of all customers.
 3. RouteToPlanner: Call for complex multi-step queries requiring coordination of data lookups and policy checks (e.g., check database status and then find relevant guide).
 
 Strict Guidelines:

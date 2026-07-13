@@ -4,21 +4,7 @@ from langgraph.graph import StateGraph, END
 from backend.app.agents.state import AgentState
 from backend.app.agents.supervisor import supervisor_node
 from backend.app.agents.rag_agent import rag_node
-
-# Placeholder SQL agent node
-def sql_node(state: AgentState) -> Dict[str, Any]:
-    mock_msg = AIMessage(
-        content=(
-            "🗄️ [SQL Agent Placeholder]\n"
-            "Querying database records... Live query capability will be added in Phase 5.\n"
-            "SQL query statement: SELECT * FROM subscriptions WHERE customer_id = 'cust_123';"
-        )
-    )
-    return {
-        "messages": [mock_msg],
-        "current_agent": "SQL Agent",
-        "sql_results": {"query": "SELECT * FROM subscriptions WHERE customer_id = 'cust_123';", "status": "mock_success", "data": []}
-    }
+from backend.app.agents.sql_agent import sql_node
 
 # Placeholder Planner agent node
 def planner_node(state: AgentState) -> Dict[str, Any]:

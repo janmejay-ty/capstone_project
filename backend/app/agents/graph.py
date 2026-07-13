@@ -41,7 +41,6 @@ def planner_node(state: AgentState) -> Dict[str, Any]:
 def safety_node(state: AgentState) -> Dict[str, Any]:
     # Returns safety check updates to display in UI debug trace
     return {
-        "current_agent": "Safety Agent",
         "safety_check": {
             "passed": True,
             "details": "PII clear. Compliance audit completed (Phase 3 Placeholder)."

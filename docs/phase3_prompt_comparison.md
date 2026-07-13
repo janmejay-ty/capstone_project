@@ -56,6 +56,6 @@ The Phase 3 graph is defined in `backend/app/agents/graph.py` using **LangGraph*
 
 Phase 3 establishes a robust orchestrator that solves the routing bottlenecks, lack of semantic understanding, and state management issues of Phase 2. 
 
-The system has been updated from `ChatGoogleGenerativeAI` to `ChatOpenAI` to resolve Gemini API rate-limiting issues. Additionally, the RAG backend has been transitioned to support a production-ready **Qdrant Server/Cloud connection** (removing local folder locking issues entirely).
+The system has been integrated with  `ChatOpenAI`. Additionally, the RAG backend is connected to support a production-ready **Qdrant Server**.
 
 With routing, state validation, and Qdrant Server integration complete, the system is fully prepared for Phase 4/5 integration, including building seed data generators and connecting specialists to live SQLite databases.

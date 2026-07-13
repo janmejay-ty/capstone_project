@@ -58,5 +58,5 @@ if __name__ == "__main__":
     agent.handle_query("What's the refund policy?")
     agent.handle_query("How do I get my money back?") # Paraphrase of refund
     agent.handle_query("Show my subscription status") # Database check
-    agent.handle_query("My name is John")             # Memory check step 1
+    agent.handle_query("My name is Janmejay")             # Memory check step 1
     agent.handle_query("What is my name?")            # Memory check step 2

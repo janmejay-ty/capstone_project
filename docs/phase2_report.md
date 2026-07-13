@@ -30,12 +30,12 @@ I ran three specific test queries to demonstrate the major failure modes of this
 
 ### Execution 3: Conversational Memory/State Failure
 * **User Query Sequence**:
-  1. `"My name is John"`
+  1. `"My name is Janmejay"`
   2. `"What is my name?"`
-* **Expected Result**: System retains context of the user's name across turns and responds with *"Your name is John"*.
+* **Expected Result**: System retains context of the user's name across turns and responds with *"Your name is Janmejay"*.
 * **Actual Output**:
   ```text
-  RECEIVED QUERY: 'My name is John'
+  RECEIVED QUERY: 'My name is Janmejay'
   RESPONSE: 'Hello! Nice to meet you.'
 
   RECEIVED QUERY: 'What is my name?'

@@ -21,7 +21,7 @@ We need to build a modular, secure, and production-ready **AI Customer Support R
 ---
 
 ## 3. Scope & Constraints
-- **Inputs**: User text input via a Streamlit chat UI.
+- **Inputs**: User text input via a React chat UI.
 - **Outputs**: Accurate, well-formatted markdown responses containing references to company policies and customer-specific metrics where applicable.
 - **Constraints**:
   - Read-only database access (queries must be parameterized and safe).

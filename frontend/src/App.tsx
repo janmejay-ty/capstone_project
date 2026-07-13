@@ -34,6 +34,7 @@ function App() {
     safety_check: { passed: true, details: 'System Ready' }
   });
   const [feedbackLog, setFeedbackLog] = useState<Record<number, 'up' | 'down'>>({});
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const saved = localStorage.getItem('resolvedesk_theme');
     if (saved === 'light' || saved === 'dark') return saved;
@@ -206,6 +207,15 @@ function App() {
             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
           <button 
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            title={sidebarOpen ? "Collapse Trace Panel" : "Expand Trace Panel"}
+            className={`p-2 rounded-lg border border-main-border transition-all hover:border-purple-500/50 hover:bg-hover-bg ${
+              sidebarOpen ? 'text-purple-400 bg-purple-500/10 border-purple-500/30' : 'text-muted-text hover:text-main-text'
+            }`}
+          >
+            <Terminal className="w-4 h-4" />
+          </button>
+          <button 
             onClick={regenerateSession}
             title="Generate New Session ID"
             className="p-2 hover:bg-hover-bg rounded-lg border border-main-border hover:border-purple-500/50 transition-all text-muted-text hover:text-main-text"
@@ -352,7 +362,9 @@ function App() {
         </div>
 
         {/* Trace Console Panel (Right Sidebar) */}
-        <aside className="w-80 md:w-96 border-l border-main-border bg-panel-bg flex flex-col overflow-y-auto p-6 space-y-6 transition-colors duration-200">
+        <aside className={`border-l border-main-border bg-panel-bg flex flex-col overflow-y-auto space-y-6 transition-all duration-300 ease-in-out ${
+          sidebarOpen ? 'w-80 md:w-96 p-6 opacity-100' : 'w-0 p-0 border-l-0 opacity-0 overflow-hidden'
+        }`}>
           <div className="flex items-center gap-2 border-b border-main-border pb-3">
             <Terminal className="w-5 h-5 text-purple-400" />
             <h2 className="font-bold text-main-text text-sm uppercase tracking-wider">Agent Evaluation Trace</h2>

@@ -38,6 +38,9 @@ venv\Scripts\activate
 # macOS / Linux:
 source venv/bin/activate
 
+# Upgrade pip to the latest version
+python -m pip install --upgrade pip
+
 # Install all dependencies
 pip install -r requirements.txt
 ```

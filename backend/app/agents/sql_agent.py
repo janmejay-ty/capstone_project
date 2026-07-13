@@ -89,12 +89,13 @@ def sql_node(state: AgentState) -> Dict[str, Any]:
     # Bind tools to the LLM
     llm_with_tools = llm.bind_tools(tools)
 
-    # Build messages to invoke the chain, filtering out supervisor routing tool calls.
+    # Build messages to invoke the chain, filtering out supervisor routing and tool execution messages from history.
     messages = []
     for msg in state["messages"]:
-        if hasattr(msg, "tool_calls") and msg.tool_calls:
-            continue
-        messages.append(msg)
+        if msg.type in ["human", "user"]:
+            messages.append(msg)
+        elif msg.type in ["ai", "assistant"] and not (hasattr(msg, "tool_calls") and msg.tool_calls):
+            messages.append(msg)
         
     system_msg = SystemMessage(content=SQL_SYSTEM_PROMPT)
 

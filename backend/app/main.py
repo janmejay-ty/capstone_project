@@ -55,21 +55,11 @@ async def chat_endpoint(request: ChatRequest):
     if session_id not in chat_history_store:
         chat_history_store[session_id] = []
 
-    # Map previous memory history to LangChain message objects
-    lang_messages = []
-    for msg in chat_history_store[session_id]:
-        if msg["role"] == "user":
-            lang_messages.append(HumanMessage(content=msg["content"]))
-        elif msg["role"] == "assistant":
-            lang_messages.append(AIMessage(content=msg["content"]))
-
-    # Append the new user message
-    lang_messages.append(HumanMessage(content=request.message))
-
-    # Invoke the LangGraph workflow
+    # Invoke the LangGraph workflow with the new human message.
+    # The checkpointer (MemorySaver) will automatically retrieve and append to session history.
     try:
         inputs = {
-            "messages": lang_messages,
+            "messages": [HumanMessage(content=request.message)],
             "current_agent": "Supervisor",
             "plan_steps": [],
             "rag_context": "",

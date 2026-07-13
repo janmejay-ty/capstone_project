@@ -97,8 +97,17 @@ def supervisor_node(state: AgentState) -> Dict[str, Any]:
         MessagesPlaceholder(variable_name="messages"),
     ])
     
+    # Filter messages to only include human messages and assistant messages without tool calls.
+    # This prevents OpenAI API from throwing errors about unmatched tool call IDs in the history.
+    filtered_messages = []
+    for msg in state["messages"]:
+        if msg.type in ["human", "user"]:
+            filtered_messages.append(msg)
+        elif msg.type in ["ai", "assistant"] and not (hasattr(msg, "tool_calls") and msg.tool_calls):
+            filtered_messages.append(msg)
+            
     chain = prompt | llm_with_tools
-    response = chain.invoke({"messages": state["messages"]})
+    response = chain.invoke({"messages": filtered_messages})
     
     return {
         "messages": [response],

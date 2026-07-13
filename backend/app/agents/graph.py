@@ -5,23 +5,8 @@ from backend.app.agents.state import AgentState
 from backend.app.agents.supervisor import supervisor_node
 from backend.app.agents.rag_agent import rag_node
 from backend.app.agents.sql_agent import sql_node
-
-# Placeholder Planner agent node
-def planner_node(state: AgentState) -> Dict[str, Any]:
-    mock_msg = AIMessage(
-        content=(
-            "📋 [Planner Agent Placeholder]\n"
-            "Decomposing task steps:\n"
-            "1. Lookup customer transaction records via SQL Agent.\n"
-            "2. Retrieve refund terms via RAG Agent.\n"
-            "3. Validate refund policy compliance."
-        )
-    )
-    return {
-        "messages": [mock_msg],
-        "current_agent": "Planner Agent",
-        "plan_steps": ["1. SQL: Customer lookup", "2. RAG: Refund policy check", "3. Safety validation"]
-    }
+from backend.app.agents.planner_agent import planner_node
+from backend.app.memory.session_memory import memory_checkpointer
 
 # Placeholder Safety agent node
 def safety_node(state: AgentState) -> Dict[str, Any]:
@@ -74,4 +59,6 @@ builder.add_edge("sql", "safety")
 builder.add_edge("planner", "safety")
 builder.add_edge("safety", END)
 
-graph = builder.compile()
+
+
+graph = builder.compile(checkpointer=memory_checkpointer)

@@ -246,26 +246,7 @@ function App() {
                 <p className="text-sm text-muted-text">
                   Hello! I am your AI resolution copilot. Ask me about refund policies, subscription information, pricing plans, or client troubleshooting tickets.
                 </p>
-                <div className="grid grid-cols-2 gap-2 w-full pt-4">
-                  <button 
-                    onClick={() => setInput("What's the refund policy?")}
-                    className="p-2 text-xs bg-pill-bg border border-main-border hover:border-purple-500/50 rounded-lg text-left text-pill-text hover:text-main-text transition-all cursor-pointer"
-                  >
-                    What's the refund policy?
-                  </button>
-                  <button 
-                    onClick={() => setInput("How do I get my money back?")}
-                    className="p-2 text-xs bg-pill-bg border border-main-border hover:border-purple-500/50 rounded-lg text-left text-pill-text hover:text-main-text transition-all cursor-pointer"
-                  >
-                    How do I get my money back?
-                  </button>
-                  <button 
-                    onClick={() => setInput("Show my subscription status")}
-                    className="p-2 text-xs bg-pill-bg border border-main-border hover:border-purple-500/50 rounded-lg text-left text-pill-text hover:text-main-text transition-all col-span-2 cursor-pointer"
-                  >
-                    Show my subscription status
-                  </button>
-                </div>
+               
               </div>
             ) : (
               messages.map((msg, index) => (

@@ -28,28 +28,50 @@ def safety_node(state: AgentState) -> Dict[str, Any]:
         return {
             "safety_check": {"passed": True, "details": "No messages to check.", "human_escalation_required": False}
         }
-        
+
+    # --- Check original user query for high-risk intent ---
+    user_query = ""
+    for msg in reversed(messages_list):
+        if msg.type == "human":
+            user_query = msg.content.lower()
+            break
+
+    HIGH_RISK_USER_PATTERNS = [
+        "delete", "remove", "erase", "wipe", "purge",  # data deletion intent
+        "delete account", "delete data", "delete customer",
+    ]
+    user_high_risk = any(k in user_query for k in HIGH_RISK_USER_PATTERNS)
+
+    if user_high_risk:
+        return {
+            "safety_check": {
+                "passed": False,
+                "details": "High-risk request detected: data deletion or account removal requires manager authorization. Escalated for human review.",
+                "human_escalation_required": True
+            }
+        }
+
     last_msg = messages_list[-1]
-    
+
     # If the last message is an assistant message, perform safety checks.
     # Note: PII is NOT redacted from the user-facing output message, since the user persona is an
     # authorized internal support employee/manager who requires access to customer contact details.
     if last_msg.type == "ai":
         content = last_msg.content or ""
         lower_content = content.lower()
-        
+
         # Check for manual refund approvals to escalate
         escalation_required = False
         if "refund" in lower_content and ("approv" in lower_content or "initiat" in lower_content or "process" in lower_content or "issued" in lower_content):
             if not any(k in lower_content for k in ["ineligible", "not eligible", "non-refundable", "reject"]):
                 escalation_required = True
-                
-        # Check for DB modification attempts
+
+        # Check for DB modification attempts in AI output
         db_exploit = False
         if any(k in lower_content for k in ["delete from", "drop table", "update customers", "insert into"]):
             db_exploit = True
             escalation_required = True
-            
+
         return {
             "safety_check": {
                 "passed": not db_exploit,
@@ -57,7 +79,7 @@ def safety_node(state: AgentState) -> Dict[str, Any]:
                 "human_escalation_required": escalation_required
             }
         }
-        
+
     return {
         "safety_check": {"passed": True, "details": "Last message not assistant. Skip audit.", "human_escalation_required": False}
     }

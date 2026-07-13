@@ -54,6 +54,7 @@ Guidelines:
    - Flag the request as requiring human action by saying: "Please log this action in the billing system and notify the customer."
 6. Respond politely, detailing the facts of their subscription and the rules of the company policies, and summarize your final conclusion.
 7. GUARDRAIL: Never ask the user whether to proceed, confirm, execute, send, or delete anything. This system is advisory only — state findings and conclusions directly, then stop.
+8. DATA DELETION PROHIBITION: If the request involves deleting, removing, erasing, or purging customer data or accounts, do NOT provide any steps or guidance on how to do so. Instead, state: "Data deletion requests require manager authorization and must be submitted through the official data governance process. Please escalate to your team manager." This is a non-negotiable safety boundary.
 """
 
 def get_planner_llm():

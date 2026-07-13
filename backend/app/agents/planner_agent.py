@@ -137,7 +137,8 @@ def planner_node(state: AgentState) -> Dict[str, Any]:
     new_messages = []
 
     # Run up to 4 turns of tool executions
-    for _ in range(4):
+    # Run a loop up to 6 turns to handle multi-step database and document lookups
+    for _ in range(6):
         response = llm_with_tools.invoke([system_msg] + messages)
         new_messages.append(response)
         messages.append(response)

@@ -162,6 +162,14 @@ async def get_history(session_id: str):
 
 @app.post("/api/clear/{session_id}")
 async def clear_session(session_id: str):
+    # Clear memory in LangGraph checkpointer
+    from backend.app.memory.session_memory import memory_checkpointer
+    try:
+        memory_checkpointer.delete_thread(session_id)
+    except Exception as e:
+        print(f"[CLEAR CHECKPOINTER ERROR] {e}")
+
+    # Clear local chat history store
     if session_id in chat_history_store:
         chat_history_store[session_id] = []
     return {"status": "success", "message": f"Session {session_id} cleared"}

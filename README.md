@@ -12,16 +12,16 @@ Before you start, make sure you have the following installed:
 |---|---|---|
 | Python | 3.10+ | Backend runtime |
 | Node.js | 18+ | Frontend React build |
-| Git | Any | Cloning the repo |
 | Docker *(optional)* | Any | Running Qdrant locally |
 
 ---
 
-## 1. Clone the Repository
+## 1. Extract the Project
 
-```bash
-git clone https://github.com/your-username/capstone_project.git
-cd capstone_project
+Unzip the project archive and open a terminal inside the extracted folder:
+
+```
+capstone_project/   ← open your terminal here
 ```
 
 ---

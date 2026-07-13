@@ -195,7 +195,7 @@ capstone_project\
 ### Phase 1: Problem Framing & Success Definition
 **Coding:** Not required | **Output:** `docs/problem_framing.md`
 
-- **User Persona**: Sarah, Customer Success Manager — handles 50+ tickets/day, needs instant support resolving subscriptions, bills, refunds, and troubleshooting.
+- **User Persona**: Customer Success Specialist — handles 50+ tickets/day, needs instant support resolving subscriptions, bills, refunds, and troubleshooting.
 - **Success Criteria**: >85% accuracy; <3s latency; 0% fabricated policies; 100% safety escalation; >90% routing accuracy.
 - **Edge Cases**: Jailbreak, prompt/SQL injection, cross-user memory leakage, missing RAG documents, database down.
 

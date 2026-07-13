@@ -11,11 +11,10 @@ We need to build a modular, secure, and production-ready **AI Customer Support R
 
 ---
 
-## 2. User Persona: Sarah, Customer Success Specialist
-- **Name**: Sarah
-- **Role**: Level 1 Customer Success Specialist at ResolveDesk AI.
-- **Daily Context**: Sarah handles 50+ tickets daily. She needs to toggle between multiple browser tabs to find customer details, subscription statuses, billing info, and product manuals.
-- **Needs**: Instant, reliable, context-grounded answers. She wants the agent to handle routine lookups and draft responses so she can focus on high-touch issues.
+## 2. User Persona: Customer Success Specialist
+- **Role**: Customer Success Specialist at ResolveDesk AI.
+- **Daily Context**: The specialist handles 50+ tickets daily and needs to toggle between multiple browser tabs to find customer details, subscription statuses, billing info, and product manuals.
+- **Needs**: Instant, reliable, context-grounded answers. The agent should handle routine lookups and draft responses so the specialist can focus on high-touch issues.
 - **Pain Points**: Copy-pasting data, manual math for refund calculations, and risk of misinterpreting complex refund/subscription rules.
 
 ---
@@ -33,14 +32,14 @@ We need to build a modular, secure, and production-ready **AI Customer Support R
 ---
 
 ## 4. Workflow Mapping
-1. **User Query Input**: Sarah types a question or case query.
+1. **User Query Input**: The specialist types a question or case query.
 2. **Intent & Routing (Supervisor)**: The Supervisor Agent parses the query and decides which worker to route to:
    - *RAG*: For general questions, policy questions, user manual.
    - *SQL*: For subscription, customer profile, billing, or ticket details.
    - *Planner*: For complex/multi-step tasks.
 3. **Execution (Specialists)**: The chosen worker executes the task (fetching database records or vector document chunks).
 4. **Safety Check (Safety Agent)**: Every output passes through the Safety Agent to inspect for policy violations, hallucinations, or leakage of sensitive logs.
-5. **Output & Feedback**: The finalized response is displayed to Sarah, who can rate it (👍/👎).
+5. **Output & Feedback**: The finalized response is displayed to the specialist, who can rate it (👍/👎).
 
 ---
 

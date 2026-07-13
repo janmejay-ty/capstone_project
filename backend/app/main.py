@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, AIMessage
 from backend.app.agents.graph import graph
+from backend.app.memory.session_memory import memory_checkpointer
 import sqlite3
 import uvicorn
 
@@ -163,7 +164,7 @@ async def get_history(session_id: str):
 @app.post("/api/clear/{session_id}")
 async def clear_session(session_id: str):
     # Clear memory in LangGraph checkpointer
-    from backend.app.memory.session_memory import memory_checkpointer
+    
     try:
         memory_checkpointer.delete_thread(session_id)
     except Exception as e:

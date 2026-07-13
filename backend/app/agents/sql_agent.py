@@ -34,6 +34,7 @@ Guidelines:
 4. Respond concisely and politely, strictly based on the database results.
 5. Do NOT make up database records or information that is not in the query results.
 6. If the database returns no results, state clearly that you couldn't find the records.
+7. GUARDRAIL: Never ask the user whether to proceed, confirm, execute, send, or delete anything. This system is advisory only — state findings directly, then stop.
 """
 
 def get_sql_llm():

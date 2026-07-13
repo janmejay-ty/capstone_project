@@ -1,6 +1,6 @@
 import os
 import sys
-import shutil
+from pathlib import Path
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -72,7 +72,8 @@ def create_pdf(filename, title, content_sections):
     print(f"Generated PDF: {filename}")
 
 def main():
-    docs_dir = r"c:\Users\User\Desktop\python\capstone_project\knowledge\docs"
+    # Resolve docs_dir relative to this file — works on any machine
+    docs_dir = Path(__file__).resolve().parents[3] / "knowledge" / "docs"
     
     # Clean up existing directory and files
     if os.path.exists(docs_dir):

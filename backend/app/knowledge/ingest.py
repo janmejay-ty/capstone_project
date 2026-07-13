@@ -1,5 +1,6 @@
 import os
 import sys
+from pathlib import Path
 from pypdf import PdfReader
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -27,7 +28,8 @@ def load_pdf(file_path):
     return Document(page_content=text, metadata=metadata)
 
 def main():
-    docs_dir = r"c:\Users\User\Desktop\python\capstone_project\knowledge\docs"
+    # Resolve docs_dir relative to this file — works on any machine
+    docs_dir = Path(__file__).resolve().parents[3] / "knowledge" / "docs"
     
     if not os.path.exists(docs_dir):
         print(f"[ERROR] Knowledge docs directory does not exist: {docs_dir}")

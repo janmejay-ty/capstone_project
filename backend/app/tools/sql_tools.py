@@ -1,10 +1,12 @@
 # sql_tools.py
 import os
 import sqlite3
+from pathlib import Path
 from langchain_core.tools import tool
 
-# Default database path
-DEFAULT_DB_PATH = r"c:\Users\User\Desktop\python\capstone_project\database\support.db"
+# Resolve database path relative to this file's location (portable across machines)
+_PROJECT_ROOT = Path(__file__).resolve().parents[3]  # backend/app/tools -> project root
+DEFAULT_DB_PATH = str(_PROJECT_ROOT / "database" / "support.db")
 
 def get_db_connection():
     db_path = os.getenv("SQLITE_DB_PATH", DEFAULT_DB_PATH)

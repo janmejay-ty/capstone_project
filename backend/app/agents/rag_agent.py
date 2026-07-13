@@ -57,7 +57,7 @@ def rag_node(state: AgentState) -> Dict[str, Any]:
         }
 
     # Query local Qdrant vector database
-    chunks = query_knowledge_base(query, limit=3)
+    chunks = query_knowledge_base(query, limit=6)
     context = "\n---\n".join(chunks)
 
     llm = get_rag_llm()

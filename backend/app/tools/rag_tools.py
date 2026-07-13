@@ -18,7 +18,7 @@ client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key)
 embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 collection_name = "resolvedesk_docs"
 
-def query_knowledge_base(query: str, limit: int = 3):
+def query_knowledge_base(query: str, limit: int = 6):
     """
     Search the ResolveDesk AI knowledge base PDFs stored in Qdrant.
     Returns a list of raw text chunks that match the query semantically.

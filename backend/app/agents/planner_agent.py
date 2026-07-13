@@ -21,7 +21,7 @@ def search_knowledge_base(query: str) -> str:
     """
     Search the company documentation, guides, refund policies, FAQs, and API manuals for information matching the query.
     """
-    chunks = query_knowledge_base(query, limit=3)
+    chunks = query_knowledge_base(query, limit=6)
     if not chunks:
         return "No documentation found matching the search query."
     return "\n---\n".join(chunks)

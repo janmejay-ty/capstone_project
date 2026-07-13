@@ -6,16 +6,16 @@ This report documents the design, technical implementation, and verification res
 
 ## 1. Document Ingestion Pipeline
 
-To populate the ResolveDesk AI knowledge base, we wrote 9 comprehensive PDF files outlining company policies, faqs, guides, and manuals. We then built a python ingestion script (`backend/app/knowledge/ingest.py`) to process them.
+To populate the ResolveDesk AI knowledge base, we wrote 9 comprehensive PDF files outlining company policies, faqs, guides, and manuals. We then built a python ingestion script (`backend/app/knowledge/ingest.py`) to process them. 
 
 ### Ingestion Pipeline Architecture
-1. **PDF Parsing**: Used `pypdf` (`PdfReader`) to load and extract text from the 9 source PDFs in [knowledge/docs/](file:///c:/Users/User/Desktop/python/capstone_project/knowledge/docs).
+1. **PDF Parsing**: Used `pypdf` (`PdfReader`) to load and extract text from the 9 source PDFs in [knowledge/docs/](file:///c:/Users/User/Desktop/python/capstone_project/knowledge/docs). Each PDF is built to cover **at least 2 pages** of detailed content.
 2. **Text Chunking**: Chunked extracted text using LangChain's `RecursiveCharacterTextSplitter` with a `chunk_size` of 500 characters and a `chunk_overlap` of 50 characters.
 3. **Local Embedding Generation**: Utilized **HuggingFace Embeddings** (`all-MiniLM-L6-v2` via `sentence-transformers`) to generate local vector embeddings (384 dimensions) for each text chunk.
 4. **Vector Store Upsert**: Configured `QdrantClient` in server/cloud mode to connect to the Qdrant Cloud cluster, create/recreate the collection `resolvedesk_docs`, and upload the generated vectors with source path metadata.
 
 ### Knowledge Base Catalog
-The following 9 documents were loaded and processed into Qdrant:
+The following 9 2-page documents were loaded and processed into Qdrant:
 * [api_documentation.pdf](file:///c:/Users/User/Desktop/python/capstone_project/knowledge/docs/api_documentation.pdf)
 * [faq.pdf](file:///c:/Users/User/Desktop/python/capstone_project/knowledge/docs/faq.pdf)
 * [pricing_guide.pdf](file:///c:/Users/User/Desktop/python/capstone_project/knowledge/docs/pricing_guide.pdf)
@@ -32,7 +32,7 @@ The following 9 documents were loaded and processed into Qdrant:
 
 The RAG Agent Specialist was integrated into the LangGraph state graph to answer informational queries.
 
-* **Tool Component ([rag_tools.py](file:///c:/Users/User/Desktop/python/capstone_project/backend/app/tools/rag_tools.py))**: Defines `query_knowledge_base()`, which embeds incoming customer queries and searches the Qdrant server for the top 3 semantically closest chunks.
+* **Tool Component ([rag_tools.py](file:///c:/Users/User/Desktop/python/capstone_project/backend/app/tools/rag_tools.py))**: Defines `query_knowledge_base()`, which embeds incoming customer queries and searches the Qdrant server for the **top 6** semantically closest chunks to ensure full coverage of the 2-page documents.
 * **Agent Node ([rag_agent.py](file:///c:/Users/User/Desktop/python/capstone_project/backend/app/agents/rag_agent.py))**: Executes the tool, binds the retrieved context to the system prompt, and calls `ChatOpenAI` to generate a grounded response.
 * **Safety Protocol**: Instructs the RAG Agent to only respond using the context provided. If information is missing, the agent outputs: *"I'm sorry, but I couldn't find information in the documentation to answer your request."*
 
@@ -45,12 +45,12 @@ We ran the ingestion pipeline and verified the RAG Specialist Agent's retrieval 
 ### Ingestion Output Log
 ```text
 Loaded 9 documents. Splitting into chunks...
-Created 22 chunks from documents.
+Created 40 chunks from documents.
 Connecting to Qdrant server/cloud at https://xxxx.aws.cloud.qdrant.io...
 Recreating Qdrant collection: 'resolvedesk_docs'...
 Initializing HuggingFaceEmbeddings (all-MiniLM-L6-v2)...
 Embedding chunks and preparing points for upload...
-Upserting 22 points into Qdrant collection...
+Upserting 40 points into Qdrant collection...
 Ingestion pipeline completed successfully!
 ```
 

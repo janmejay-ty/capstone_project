@@ -97,7 +97,11 @@ def sql_node(state: AgentState) -> Dict[str, Any]:
         elif msg.type in ["ai", "assistant"] and not (hasattr(msg, "tool_calls") and msg.tool_calls):
             messages.append(msg)
         
-    system_msg = SystemMessage(content=SQL_SYSTEM_PROMPT)
+    feedback = state.get("feedback_note", "")
+    sys_prompt = SQL_SYSTEM_PROMPT
+    if feedback:
+        sys_prompt += f"\n\nAdaptive Tone Guideline:\n{feedback}"
+    system_msg = SystemMessage(content=sys_prompt)
 
     sql_results = {}
     new_messages = []

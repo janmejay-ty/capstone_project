@@ -13,3 +13,4 @@ class AgentState(TypedDict):
     sql_results: Dict[str, Any]
     safety_check: Dict[str, Any]
     session_id: str
+    feedback_note: str

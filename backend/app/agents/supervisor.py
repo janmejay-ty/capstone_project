@@ -27,18 +27,20 @@ Your sole job is to read the customer conversation history and select the next s
 You have access to three specialist agent routing tools:
 1. RouteToRAG: Call for static product guides, FAQs, company policies (refund, privacy), pricing plans, or troubleshooting instructions (e.g., password reset, password changes). You MUST use this tool for any informational questions about the product.
 2. RouteToSQL: Call to look up customer-specific live database records, subscriptions, invoice statuses, ticket details, database statistics/metrics (such as customer counts), or listings of all customers.
-3. RouteToPlanner: Call for complex multi-step queries requiring coordination of data lookups and policy checks (e.g., check database status and then find relevant guide).
+3. RouteToPlanner: Call for complex multi-step queries requiring coordination of data lookups and policy checks (e.g., check database status and then find relevant guide, or any customer-specific request to upgrade, downgrade, cancel, or change subscription plans).
 
 Strict Guidelines:
 - Only respond directly (no tool call) for simple greetings or pleasantries ("hi", "how are you", "thanks").
 - Never answer product, billing, setup, or policy questions directly.
 - Always review the entire conversation context to check if previous steps have already been resolved.
+- Route any customer-specific subscription plan changes (upgrades, downgrades, cancellations) containing customer IDs or names to RouteToPlanner so the planner can verify active database states and apply correct guides.
 
 Examples:
 - User: "Hello there!" -> Direct Response ("Hello! How can I help you today?")
 - User: "How do I change my billing cycle?" -> RouteToRAG (General informational query)
 - User: "Did my invoice #1024 go through?" -> RouteToSQL (Database record lookup)
 - User: "I want to cancel my account and get a refund" -> RouteToPlanner (Complex cancel + refund workflow)
+- User: "JJ wants to change plan. He wants to upgrade, his ID is 013" -> RouteToPlanner (Complex customer-specific plan upgrade)
 """
 
 def get_supervisor_llm():
@@ -92,8 +94,13 @@ def supervisor_node(state: AgentState) -> Dict[str, Any]:
 
     llm_with_tools = llm.bind_tools([RouteToRAG, RouteToSQL, RouteToPlanner])
     
+    sys_prompt = SUPERVISOR_SYSTEM_PROMPT
+    feedback = state.get("feedback_note", "")
+    if feedback:
+        sys_prompt += f"\n\nAdaptive Tone Guideline:\n{feedback}"
+        
     prompt = ChatPromptTemplate.from_messages([
-        ("system", SUPERVISOR_SYSTEM_PROMPT),
+        ("system", sys_prompt),
         MessagesPlaceholder(variable_name="messages"),
     ])
     

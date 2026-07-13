@@ -24,7 +24,7 @@ def main():
         schema_sql = f.read()
         
     # Clean up existing tables to prevent stale records from previous seeding runs
-    for table in ["tickets", "payments", "subscriptions", "products", "customers"]:
+    for table in ["tickets", "payments", "subscriptions", "products", "customers", "feedback_logs"]:
         cursor.execute(f"DROP TABLE IF EXISTS {table}")
         
     cursor.executescript(schema_sql)

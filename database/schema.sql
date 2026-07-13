@@ -48,3 +48,11 @@ CREATE TABLE IF NOT EXISTS tickets (
     created_at TEXT NOT NULL,
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 );
+
+CREATE TABLE IF NOT EXISTS feedback_logs (
+    feedback_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id TEXT NOT NULL,
+    message_index INTEGER NOT NULL,
+    rating TEXT NOT NULL, -- 'up' or 'down'
+    created_at TEXT NOT NULL
+);

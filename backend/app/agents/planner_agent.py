@@ -39,11 +39,16 @@ You have access to the following tools:
 Guidelines:
 1. Before answering the user, you MUST formulate a clear step-by-step plan (e.g. "1. SQL: Lookup customer and subscription status. 2. RAG: Search company refund policy rules. 3. Analyze compliance.").
 2. Execute the tools sequentially to fetch the required information.
-3. Once you gather the customer data and refund/cancellation guidelines, evaluate the request compliance:
+3. If a customer ID or name is provided in the query context, you MUST run a data validation check:
+   - Run customer_lookup to find the customer's profile using the ID (e.g. search for cust_013 or 013).
+   - Compare the database name associated with that ID (e.g. Grace Lewis) with the customer name mentioned in the conversation (e.g. JJ).
+   - If there is a name mismatch (i.e. the ID belongs to a different person than the one mentioned in the chat), you MUST explicitly warn the user about this profile mismatch and halt the process instead of offering plan upgrade/change instructions.
+   - Run subscription_lookup to check their current active subscription. If they are already on the plan they want to change to (e.g. they want to upgrade to Pro but they are already on the Pro Plan), state this clearly and ask for clarification.
+4. Once you gather the customer data and refund/cancellation guidelines, evaluate the request compliance:
    - Check the customer's subscription plan: monthly plans are strictly non-refundable. Annual plans are eligible for a 100% refund within 14 days of the initial transaction date.
    - Compare the start date of the subscription to the current date/transaction date to check the 14-day window.
    - Formulate a definitive conclusion on whether the user is eligible for cancellation and a refund.
-4. Respond politely, detailing the facts of their subscription and the rules of the company policies, and summarize your final conclusion.
+5. Respond politely, detailing the facts of their subscription and the rules of the company policies, and summarize your final conclusion.
 """
 
 def get_planner_llm():
@@ -122,7 +127,11 @@ def planner_node(state: AgentState) -> Dict[str, Any]:
         elif msg.type in ["ai", "assistant"] and not (hasattr(msg, "tool_calls") and msg.tool_calls):
             messages.append(msg)
         
-    system_msg = SystemMessage(content=PLANNER_SYSTEM_PROMPT)
+    feedback = state.get("feedback_note", "")
+    sys_prompt = PLANNER_SYSTEM_PROMPT
+    if feedback:
+        sys_prompt += f"\n\nAdaptive Tone Guideline:\n{feedback}"
+    system_msg = SystemMessage(content=sys_prompt)
 
     sql_results = {}
     new_messages = []

@@ -37,14 +37,22 @@ def customer_lookup(query: str) -> str:
     Search for customer records in the ResolveDesk database.
     The query can be a customer email, a customer name (partial matching), or a customer_id.
     """
-    sql = """
+    clean_query = query.strip()
+    # Auto-pad numeric queries to match cust_XXX format (e.g. 013 -> cust_013)
+    lookup_ids = [clean_query]
+    if clean_query.isdigit():
+        lookup_ids.append(f"cust_{int(clean_query):03d}")
+        
+    placeholders = ",".join("?" for _ in lookup_ids)
+    sql = f"""
         SELECT customer_id, name, email, phone, created_at 
         FROM customers 
-        WHERE customer_id = ? OR email = ? OR name LIKE ?
+        WHERE customer_id IN ({placeholders}) OR email = ? OR name LIKE ?
     """
     # Try exact match first, then fallback to partial name match
-    param_name = f"%{query}%"
-    results = run_select_query(sql, (query, query, param_name))
+    param_name = f"%{clean_query}%"
+    params = tuple(lookup_ids) + (clean_query, param_name)
+    results = run_select_query(sql, params)
     
     if not results:
         return f"No customer found matching search query: '{query}'."

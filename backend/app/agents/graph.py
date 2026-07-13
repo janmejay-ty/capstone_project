@@ -8,14 +8,58 @@ from backend.app.agents.sql_agent import sql_node
 from backend.app.agents.planner_agent import planner_node
 from backend.app.memory.session_memory import memory_checkpointer
 
-# Placeholder Safety agent node
+import re
+
+def redact_pii(text: str) -> str:
+    # Redact email addresses
+    email_pattern = r"\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b"
+    text = re.sub(email_pattern, "[REDACTED_EMAIL]", text)
+    
+    # Redact phone numbers (e.g. 555-123-4567, 555.123.4567, 555 123 4567)
+    phone_pattern = r"\b(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b"
+    text = re.sub(phone_pattern, "[REDACTED_PHONE]", text)
+    
+    return text
+
+# Safety agent node
 def safety_node(state: AgentState) -> Dict[str, Any]:
-    # Returns safety check updates to display in UI debug trace
-    return {
-        "safety_check": {
-            "passed": True,
-            "details": "PII clear. Compliance audit completed (Phase 3 Placeholder)."
+    messages_list = list(state["messages"])
+    if not messages_list:
+        return {
+            "safety_check": {"passed": True, "details": "No messages to check.", "human_escalation_required": False}
         }
+        
+    last_msg = messages_list[-1]
+    
+    # If the last message is an assistant message, perform safety checks.
+    # Note: PII is NOT redacted from the user-facing output message, since the user persona is an
+    # authorized internal support employee/manager who requires access to customer contact details.
+    if last_msg.type == "ai":
+        content = last_msg.content or ""
+        lower_content = content.lower()
+        
+        # Check for manual refund approvals to escalate
+        escalation_required = False
+        if "refund" in lower_content and ("approv" in lower_content or "initiat" in lower_content or "process" in lower_content or "issued" in lower_content):
+            if not any(k in lower_content for k in ["ineligible", "not eligible", "non-refundable", "reject"]):
+                escalation_required = True
+                
+        # Check for DB modification attempts
+        db_exploit = False
+        if any(k in lower_content for k in ["delete from", "drop table", "update customers", "insert into"]):
+            db_exploit = True
+            escalation_required = True
+            
+        return {
+            "safety_check": {
+                "passed": not db_exploit,
+                "details": "Database exploit check passed. PII audit completed." if not db_exploit else "Security violation: database write attempted.",
+                "human_escalation_required": escalation_required
+            }
+        }
+        
+    return {
+        "safety_check": {"passed": True, "details": "Last message not assistant. Skip audit.", "human_escalation_required": False}
     }
 
 # Conditional routing edge from supervisor

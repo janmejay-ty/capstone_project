@@ -6,6 +6,10 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
+from langchain_core.messages import HumanMessage, AIMessage
+from backend.app.agents.graph import graph
+import sqlite3
+import uvicorn
 
 # Load env variables
 load_dotenv()
@@ -13,8 +17,7 @@ load_dotenv()
 # Add project root to Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
-from langchain_core.messages import HumanMessage, AIMessage
-from backend.app.agents.graph import graph
+
 
 
 app = FastAPI(title="ResolveDesk AI API", version="1.0.0")
@@ -28,10 +31,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# In-memory history & feedback store for baseline agent
-# As Phase 6/7 are implemented, this can be moved to SQLite / Session Checkpointers
+# SQLite DB Path
+DB_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "database", "support.db"))
+
 chat_history_store: Dict[str, List[Dict[str, Any]]] = {}
-feedback_store: List[Dict[str, Any]] = []
 
 class ChatRequest(BaseModel):
     message: str
@@ -55,6 +58,23 @@ async def chat_endpoint(request: ChatRequest):
     if session_id not in chat_history_store:
         chat_history_store[session_id] = []
 
+    # Check SQLite for any negative ratings (downvotes) in this session to trigger adaptive behaviour
+
+    feedback_note = ""
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT COUNT(*) FROM feedback_logs WHERE session_id = ? AND rating = 'down'",
+            (session_id,)
+        )
+        downvotes = cursor.fetchone()[0]
+        conn.close()
+        if downvotes > 0:
+            feedback_note = "SYSTEM NOTICE: The user previously downvoted responses in this session. Adjust your tone to be extra polite, clear, and detailed."
+    except Exception as e:
+        print(f"[FEEDBACK CHECK ERROR] {e}")
+
     # Invoke the LangGraph workflow with the new human message.
     # The checkpointer (MemorySaver) will automatically retrieve and append to session history.
     try:
@@ -65,7 +85,8 @@ async def chat_endpoint(request: ChatRequest):
             "rag_context": "",
             "sql_results": {},
             "safety_check": {"passed": True, "details": "Initial Check"},
-            "session_id": session_id
+            "session_id": session_id,
+            "feedback_note": feedback_note
         }
         config = {"configurable": {"thread_id": session_id}}
         result = graph.invoke(inputs, config)  # type: ignore
@@ -117,13 +138,20 @@ async def chat_endpoint(request: ChatRequest):
 
 @app.post("/api/feedback")
 async def feedback_endpoint(request: FeedbackRequest):
-    feedback_store.append({
-        "session_id": request.session_id,
-        "message_index": request.message_index,
-        "feedback_type": request.feedback_type,
-        "timestamp": datetime.datetime.now().isoformat()
-    })
-    # Log feedback in terminal
+  
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO feedback_logs (session_id, message_index, rating, created_at) VALUES (?, ?, ?, ?)",
+            (request.session_id, request.message_index, request.feedback_type, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        )
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"[FEEDBACK SAVE ERROR] {e}")
+        raise HTTPException(status_code=500, detail=f"Database error: {e}")
+        
     print(f"[FEEDBACK] Session {request.session_id}, msg index {request.message_index}: {request.feedback_type}")
     return {"status": "success", "message": "Feedback recorded"}
 
@@ -139,5 +167,5 @@ async def clear_session(session_id: str):
     return {"status": "success", "message": f"Session {session_id} cleared"}
 
 if __name__ == "__main__":
-    import uvicorn
+
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

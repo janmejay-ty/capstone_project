@@ -1,7 +1,7 @@
 import os
 import logging
 from typing import Dict, Any
-from langchain_core.messages import AIMessage
+from langchain_core.messages import AIMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from backend.app.agents.state import AgentState
@@ -75,13 +75,21 @@ def rag_node(state: AgentState) -> Dict[str, Any]:
             "rag_context": context
         }
 
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", RAG_SYSTEM_PROMPT),
-        ("human", "{query}")
-    ])
+    # Build messages history, filtering out supervisor routing and tool execution messages from history.
+    messages = []
+    for msg in state["messages"]:
+        if msg.type in ["human", "user"]:
+            messages.append(msg)
+        elif msg.type in ["ai", "assistant"] and not (hasattr(msg, "tool_calls") and msg.tool_calls):
+            messages.append(msg)
 
-    chain = prompt | llm
-    response = chain.invoke({"context": context, "query": query})
+    feedback = state.get("feedback_note", "")
+    sys_prompt = RAG_SYSTEM_PROMPT.format(context=context)
+    if feedback:
+        sys_prompt += f"\n\nAdaptive Tone Guideline:\n{feedback}"
+    system_msg = SystemMessage(content=sys_prompt)
+
+    response = llm.invoke([system_msg] + messages)
 
     return {
         "messages": [response],

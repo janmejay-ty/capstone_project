@@ -20,7 +20,7 @@ Guidelines:
 2. Do NOT fabricate any policies, features, or details that are not explicitly stated in the context above.
 3. If the customer asks a general question about a policy or system feature (e.g., "What is privacy policy?"), interpret it as a request for ResolveDesk AI's specific policy or feature, and answer using the details from the retrieved context.
 4. If the retrieved context does not contain enough information to answer the question, state: "I'm sorry, but I couldn't find information in the documentation to answer your request."
-5. GUARDRAIL: Never ask the user whether to proceed, confirm, execute, send, or delete anything. This system is advisory only — state findings directly, then stop.
+5. GUARDRAIL: Never ask the user whether to proceed, confirm, execute, send, or delete anything. You must never ask questions like "Would you like me to do that?", "Should I proceed?", "Would you like to proceed?", or offer/ask to execute actions on their behalf. This system is advisory only — state findings directly, then stop. Do not ask open-ended questions about next steps or suggest executing any commands on their behalf.
 """
 
 def get_rag_llm():

@@ -6,7 +6,7 @@ This report documents the design, technical implementation, and verification res
 
 ## 1. Safety Node Guardrails
 
-We implemented the `safety_node` in [graph.py](file:///c:/Users/User/Desktop/python/capstone_project/backend/app/agents/graph.py) to audit all final AI responses before they are returned to the client:
+The `safety_node` was implemented in [graph.py](file:///c:/Users/User/Desktop/python/capstone_project/backend/app/agents/graph.py) to audit all final AI responses before they are returned to the client:
 
 * **PII Background Auditing**: Scans assistant messages for email addresses and phone numbers. To align with the **internal support employee/manager persona** (who needs to see contact details to resolve support issues), PII is NOT redacted in the user-facing text, but is logged as audited.
 * **Database Write Block**: Scans outputs for SQL injection patterns or data modification keywords (e.g. `DELETE FROM`, `UPDATE customers`, `DROP TABLE`). If detected, the safety check is marked as failed (`passed = False`), and a security warning is raised.
@@ -16,10 +16,10 @@ We implemented the `safety_node` in [graph.py](file:///c:/Users/User/Desktop/pyt
 
 ## 2. SQLite Feedback Loops & Adaptive Prompts
 
-We built a live feedback collection and prompt adaptation loop to adjust agent behaviors based on historical ratings:
+A live feedback collection and prompt adaptation loop was built to adjust agent behaviors based on historical ratings:
 
 ### 2.1. SQLite Feedback Schema
-We created the `feedback_logs` table in [schema.sql](file:///c:/Users/User/Desktop/python/capstone_project/database/schema.sql) to record user thumbs-up/thumbs-down ratings:
+The `feedback_logs` table was created in [schema.sql](file:///c:/Users/User/Desktop/python/capstone_project/database/schema.sql) to record user thumbs-up/thumbs-down ratings:
 ```sql
 CREATE TABLE IF NOT EXISTS feedback_logs (
     feedback_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,13 +42,13 @@ CREATE TABLE IF NOT EXISTS feedback_logs (
 
 ## 3. Orchestration Prompt Updates: Plan Changes & Name Validation
 
-To resolve plan change bypasses and ensure correct routing/validation, we introduced supervisor routing updates and planner validation rules:
+To resolve plan change bypasses and ensure correct routing/validation, supervisor routing updates and planner validation rules were introduced:
 
 ### 3.1. Supervisor Routing Update
-We updated `SUPERVISOR_SYSTEM_PROMPT` to route any customer-specific plan upgrades, downgrades, or cancellations containing customer details directly to `RouteToPlanner` (instead of routing directly to RAG).
+The `SUPERVISOR_SYSTEM_PROMPT` was updated to route any customer-specific plan upgrades, downgrades, or cancellations containing customer details directly to `RouteToPlanner` (instead of routing directly to RAG).
 
 ### 3.2. Planner Customer Name-to-ID Mismatch Validation
-We updated `PLANNER_SYSTEM_PROMPT` to enforce data integrity checks:
+The `PLANNER_SYSTEM_PROMPT` was updated to enforce data integrity checks:
 * When a customer ID or name is provided, the planner must run `customer_lookup` and compare the database name with the name mentioned.
 * If a mismatch occurs (e.g. ID `013` belongs to Alice Taylor but name JJ was requested), it halts execution and issues a warning.
 * It checks `subscription_lookup` to ensure a customer is not upgraded to their current plan tier.
@@ -60,7 +60,7 @@ We updated `PLANNER_SYSTEM_PROMPT` to enforce data integrity checks:
 
 ## 4. Verification Logs
 
-We validated the safety audits, feedback loops, and plan verification rules using automated test runs:
+The safety audits, feedback loops, and plan verification rules were validated using automated test runs:
 
 ### 4.1. Safety Validation Output (`test_safety_agent.py`)
 ```

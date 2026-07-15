@@ -6,7 +6,7 @@ This document details the architectural decisions and system design justificatio
 
 ## 1. Multi-Agent Design vs. Monolithic LLM Prompts
 
-Rather than relying on a single monolithic system prompt with dozens of tools, we chose a modular **Supervisor-Specialist Multi-Agent Architecture** compiled via LangGraph:
+Rather than relying on a single monolithic system prompt with dozens of tools, a modular **Supervisor-Specialist Multi-Agent Architecture** compiled via LangGraph was selected:
 
 1. **Prompt Focus and Quality**: 
    - A single LLM with 15+ SQL and RAG tools is highly prone to **tool-selection confusion**, hallucinations, and context dilution.
@@ -15,7 +15,7 @@ Rather than relying on a single monolithic system prompt with dozens of tools, w
    - The Supervisor only coordinates routing.
    - The Specialists only receive context relevant to their domain (e.g. the SQL agent doesn't see RAG guidelines; the RAG agent doesn't see database schemas). This optimizes token consumption and speeds up inference.
 3. **Independent Scalability**:
-   - We can modify, optimize, or swap LLM models for specific workers independently (e.g., using a cheaper, faster model for SQL queries and a reasoning-heavy model for the Planner Agent).
+   - LLM models for specific workers can be modified, optimized, or swapped independently (e.g., using a cheaper, faster model for SQL queries and a reasoning-heavy model for the Planner Agent).
 
 ---
 

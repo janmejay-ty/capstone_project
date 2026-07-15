@@ -6,7 +6,7 @@ This report documents the design, technical implementation, and verification res
 
 ## 1. Document Ingestion Pipeline
 
-To populate the ResolveDesk AI knowledge base, we wrote 9 comprehensive PDF files outlining company policies, faqs, guides, and manuals. We then built a python ingestion script (`backend/app/knowledge/ingest.py`) to process them. 
+To populate the ResolveDesk AI knowledge base, 9 comprehensive PDF files outlining company policies, faqs, guides, and manuals were written. A python ingestion script (`backend/app/knowledge/ingest.py`) was then built to process them. 
 
 ### Ingestion Pipeline Architecture
 1. **PDF Parsing**: Used `pypdf` (`PdfReader`) to load and extract text from the 9 source PDFs in [knowledge/docs/](file:///c:/Users/User/Desktop/python/capstone_project/knowledge/docs). Each PDF is built to cover **at least 2 pages** of detailed content.
@@ -40,7 +40,7 @@ The RAG Agent Specialist was integrated into the LangGraph state graph to answer
 
 ## 3. Execution & Verification Logs
 
-We ran the ingestion pipeline and verified the RAG Specialist Agent's retrieval accuracy.
+The ingestion pipeline was executed, and the RAG Specialist Agent's retrieval accuracy was verified.
 
 ### Ingestion Output Log
 ```text

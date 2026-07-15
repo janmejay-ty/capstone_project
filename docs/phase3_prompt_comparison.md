@@ -28,7 +28,7 @@ You should ONLY respond directly (without calling a tool) for simple greetings, 
 
 ## 2. Prompt & Routing Comparison: Rule-Based vs. LLM Supervisor
 
-We evaluated the LLM-powered LangGraph router against the Phase 2 baseline keyword router across several test cases:
+The LLM-powered LangGraph router was evaluated against the Phase 2 baseline keyword router across several test cases:
 
 | Scenario / Query | Phase 2 Keyword Router (Baseline) | Phase 3 LLM Tool-Calling Router (ChatOpenAI) | Comparison & Analysis |
 | :--- | :--- | :--- | :--- |

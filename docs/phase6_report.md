@@ -6,7 +6,7 @@ This report documents the design, technical implementation, and verification res
 
 ## 1. Conversational Memory Isolation
 
-To prevent message history from leaking across user sessions, we integrated LangGraph's checkpointer mechanism:
+To prevent message history from leaking across user sessions, LangGraph's checkpointer mechanism was integrated:
 
 * **[session_memory.py](file:///c:/Users/User/Desktop/python/capstone_project/backend/app/memory/session_memory.py)**: Instantiates a shared `MemorySaver` checkpointer.
 * **[graph.py](file:///c:/Users/User/Desktop/python/capstone_project/backend/app/agents/graph.py)**: Compiles the StateGraph with the checkpointer:
@@ -20,7 +20,7 @@ To prevent message history from leaking across user sessions, we integrated Lang
 
 ## 2. The Planner Specialist Agent
 
-We implemented the Planner Specialist Agent to decompose and resolve complex, multi-step customer queries (e.g. evaluating cancel + refund requests):
+The Planner Specialist Agent was implemented to decompose and resolve complex, multi-step customer queries (e.g. evaluating cancel + refund requests):
 
 * **[planner_agent.py](file:///c:/Users/User/Desktop/python/capstone_project/backend/app/agents/planner_agent.py)**:
   * Defines `planner_node` with access to the SQL database tools (`customer_lookup`, `subscription_lookup`, `ticket_status`, `payment_history`) and the company document vector store (wrapped in `search_knowledge_base`).
@@ -31,7 +31,7 @@ We implemented the Planner Specialist Agent to decompose and resolve complex, mu
 
 ## 3. Database Date Consistency Refactor
 
-We resolved an inconsistency in the seeded database where expired subscription durations were marked as active:
+An inconsistency in the seeded database where expired subscription durations were marked as active was resolved:
 
 * **[seed_data_generator.py](file:///c:/Users/User/Desktop/python/capstone_project/database/seed_data_generator.py)**:
   * Uses the execution date (`datetime.now()`) as the reference "today" date.
@@ -44,7 +44,7 @@ We resolved an inconsistency in the seeded database where expired subscription d
 
 ## 4. Message History Filtering
 
-To avoid OpenAI API 400 validation errors caused by unmatched supervisor routing tool calls (`RouteToSQL`, `RouteToPlanner`, `RouteToRAG`) or specialist tool call traces in the conversation history, we implemented a robust filtering check across all agents:
+To avoid OpenAI API 400 validation errors caused by unmatched supervisor routing tool calls (`RouteToSQL`, `RouteToPlanner`, `RouteToRAG`) or specialist tool call traces in the conversation history, a robust filtering check was implemented across all agents:
 
 * Prior to calling `chain.invoke()` or `llm.invoke()`, the message thread is filtered to **only include HumanMessages and AIMessages that do not contain tool_calls**.
 * This strips raw execution traces and unmatched routing requests, keeping the context clean and compliant with OpenAI completion guidelines.
@@ -53,7 +53,7 @@ To avoid OpenAI API 400 validation errors caused by unmatched supervisor routing
 
 ## 5. Verification & Test Logs
 
-We verified the implementation using the automated test harness [test_planner_agent.py](file:///C:/Users/User/.gemini/antigravity-ide/brain/b5f4417d-6551-437c-bd96-cfd3c8f2a05a/scratch/test_planner_agent.py):
+The implementation was verified using the automated test harness [test_planner_agent.py](file:///C:/Users/User/.gemini/antigravity-ide/brain/b5f4417d-6551-437c-bd96-cfd3c8f2a05a/scratch/test_planner_agent.py):
 
 ### 5.1. Complex Cancellation and Refund Evaluation
 * **Query**: `"I want to cancel my account and get a refund. My customer ID is cust_083."`

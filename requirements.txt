@@ -8,3 +8,5 @@ qdrant-client>=1.6.0
 langchain-huggingface>=0.0.1
 sentence-transformers>=2.2.2
 numpy<2.0.0
+pypdf>=5.0.0
+reportlab>=4.0.0

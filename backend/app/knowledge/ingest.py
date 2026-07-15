@@ -33,6 +33,7 @@ def main():
     
     if not os.path.exists(docs_dir):
         print(f"[ERROR] Knowledge docs directory does not exist: {docs_dir}")
+        print("Please run generate_pdfs.py first")
         return
 
     # 1. Load all PDFs

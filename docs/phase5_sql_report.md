@@ -6,7 +6,7 @@ This report documents the design, technical implementation, and verification res
 
 ## 1. Database Architecture & Schema Design
 
-We established a local relational database `database/support.db` defined by the SQL DDL schema in [schema.sql](file:///c:/Users/User/Desktop/python/capstone_project/database/schema.sql):
+A local relational database `database/support.db` defined by the SQL DDL schema in [schema.sql](file:///c:/Users/User/Desktop/python/capstone_project/database/schema.sql) was established:
 
 1. **`customers`**: Represents registered customer accounts.
    * `customer_id` (TEXT PRIMARY KEY)
@@ -45,7 +45,7 @@ We established a local relational database `database/support.db` defined by the 
 
 ## 2. Deterministic Seeding
 
-We implemented [seed_data_generator.py](file:///c:/Users/User/Desktop/python/capstone_project/database/seed_data_generator.py) to populate the database deterministically:
+The script [seed_data_generator.py](file:///c:/Users/User/Desktop/python/capstone_project/database/seed_data_generator.py) was implemented to populate the database deterministically:
 * Uses a fixed random seed (`random.seed(42)`) to ensure reproducible mock data.
 * Automatically wipes existing database tables using `DROP TABLE IF EXISTS` to prevent stale records from polluting subsequent seeding runs.
 * Generates exactly **100 customers**, **150 subscriptions**, **228 payments**, and **300 tickets**.
@@ -56,7 +56,7 @@ We implemented [seed_data_generator.py](file:///c:/Users/User/Desktop/python/cap
 
 ## 3. Read-Only SQL Lookup Tools
 
-We implemented safe, read-only SQL lookup tools in [sql_tools.py](file:///c:/Users/User/Desktop/python/capstone_project/backend/app/tools/sql_tools.py):
+Safe, read-only SQL lookup tools were implemented in [sql_tools.py](file:///c:/Users/User/Desktop/python/capstone_project/backend/app/tools/sql_tools.py):
 * **`customer_lookup(query)`**: Search customer profiles by ID, email, or name (supporting wildcard matches).
 * **`subscription_lookup(customer_id)`**: Fetch all subscription details and associated plan prices for a customer.
 * **`ticket_status(query)`**: Fetch status and description details for support tickets by ticket_id or customer_id.
@@ -78,7 +78,7 @@ The SQL specialist was wired into the LangGraph network:
 
 ## 5. Verification Logs
 
-We validated the system using our automated test script, producing the following output:
+The system was validated using the automated test script, producing the following output:
 
 ```text
 ======================================

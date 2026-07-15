@@ -10,7 +10,7 @@ A **Supervisor agent** orchestrates **4 specialist worker agents** (RAG, SQL, Pl
 ## User Review Required
 
 > [!IMPORTANT]
-> **Incremental Execution**: We will execute the phases one by one. Each phase extends the same codebase. I will wait for your go-ahead before starting each new phase.
+> **Incremental Execution**: The execution will proceed phase by phase. Each phase extends the same codebase. A wait for your go-ahead is established before starting each new phase.
 > 
 > **Development Stack**: 
 > - **LLM**: Gemini Flash (via `langchain-google-genai`)

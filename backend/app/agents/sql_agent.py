@@ -35,6 +35,10 @@ Guidelines:
 5. Do NOT make up database records or information that is not in the query results.
 6. If the database returns no results, state clearly that you couldn't find the records.
 7. GUARDRAIL: Never ask the user whether to proceed, confirm, execute, send, or delete anything. You must never ask questions like "Would you like me to do that?", "Should I proceed?", "Would you like to proceed?", or offer/ask to execute actions on their behalf. This system is advisory only — state findings directly, then stop. Do not ask open-ended questions about next steps or suggest executing any commands on their behalf.
+8. If the user query contains both a customer name (or name reference) and a customer ID, you MUST run a data validation check:
+   - Run customer_lookup to find the customer's profile using the ID.
+   - Compare the database name associated with that ID in the database with the customer name mentioned in the conversation.
+   - If there is a name mismatch (i.e. the ID belongs to a different person than the one mentioned in the chat), you MUST explicitly warn the user about this profile mismatch and halt the process instead of returning any customer records or subscription details.
 """
 
 def get_sql_llm():

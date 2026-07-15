@@ -103,10 +103,7 @@ Then set `QDRANT_URL=http://localhost:6333` in `.env` and leave `QDRANT_API_KEY`
 Generate and seed the SQLite database with sample customer, subscription, and payment data:
 
 ```bash
-# Create the schema
-python database/init_db.py
-
-# Seed with sample data (100 customers)
+# Initialize the database schema and seed with sample data (100 customers)
 python database/seed_data_generator.py
 ```
 
@@ -190,7 +187,6 @@ capstone_project/
 │       └── main.py          # FastAPI app entry point
 ├── database/
 │   ├── schema.sql           # SQLite schema
-│   ├── init_db.py           # Creates support.db from schema
 │   └── seed_data_generator.py  # Seeds customer/subscription/payment data
 ├── docs/                    # Phase reports & design documents
 ├── frontend/                # React + TypeScript UI

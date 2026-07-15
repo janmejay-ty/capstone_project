@@ -52,10 +52,28 @@ The Phase 3 graph is defined in `backend/app/agents/graph.py` using **LangGraph*
 
 ---
 
-## 4. Conclusion & Next Steps
+## 4. Prompt Variant Comparison (Prompt Evaluation Rule)
+
+To evaluate prompt engineering iterations, two variants of the Supervisor's system prompt were tested against the same set of test queries:
+
+* **Variant A (Standard Orchestrator)**: Focuses purely on defining tool capabilities and basic routing instructions.
+* **Variant B (Reinforced Anti-Hallucination)**: Appends explicit rules prohibiting direct answers to product or customer-specific questions, forcing tool-routing.
+
+### Prompt Evaluation Table
+
+| Test Query | Variant A Output (Standard) | Variant B Output (Reinforced) | What Improved/Worsened in Variant B |
+| :--- | :--- | :--- | :--- |
+| *"How do I reset my password?"* | Responds directly explaining standard password reset flow (hallucinated from LLM weights, bypassing retrieval). | Calls `RouteToRAG` routing tool. | **Improved**: Successfully prevents hallucination and forces grounding in retrieved FAQ docs. |
+| *"John Smith wants to change his subscription plan"* | Responds directly listing general pricing packages. | Calls `RouteToPlanner` routing tool. | **Improved**: Correctly identifies customer intent and delegates to the Planner agent for verification. |
+| *"Hi there!"* | Responds with standard greeting directly. | Responds with standard greeting directly. | **Unchanged**: Direct responses for greetings work in both variants. |
+
+---
+
+## 5. Conclusion & Next Steps
 
 Phase 3 establishes a robust orchestrator that solves the routing bottlenecks, lack of semantic understanding, and state management issues of Phase 2. 
 
 The system has been integrated with  `ChatOpenAI`. Additionally, the RAG backend is connected to support a production-ready **Qdrant Server**.
 
 With routing, state validation, and Qdrant Server integration complete, the system is fully prepared for Phase 4/5 integration, including building seed data generators and connecting specialists to live SQLite databases.
+
